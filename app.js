@@ -10,23 +10,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Set the view engine to ejs
 app.set('view engine', 'ejs');
 
+// Add static folder to server
+app.use(express.static("public"));
+
 // Global variables
-var items = ['Eat Breakfast', 'Play soccer', 'Code'];
+let items = ['Eat Breakfast', 'Play soccer', 'Code'];
 
 // Get request
 app.get("/", (req, res) => {
-    var today = new Date();
-    var options = {
+    let today = new Date();
+    let options = {
         weekday: "long",
         day: "numeric",
         month: "long"
     };
 
     // Format date. Ex: Monday, July 29
-    var day = today.toLocaleDateString("en-US", options);
+    let day = today.toLocaleDateString("en-US", options);
 
     // Use res.render to load up an ejs view file
-    res.render('list', { kindOfDay: day, newListItem: items});
+    res.render('list', { kindOfDay: day, newListItem: items, listLength: items.length});
 });
 
 // Post form 
