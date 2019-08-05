@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
+const date = require(__dirname + "/date.js");
 
 // Set up express and body-parser
 const app = express();
@@ -14,29 +15,41 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 
 // Global variables
-let items = ['Eat Breakfast', 'Play soccer', 'Code'];
+const items = ['Eat Breakfast', 'Play soccer', 'Code'];
+const workList = [];
 
-// Get request
+// Get request for /
 app.get("/", (req, res) => {
-    let today = new Date();
-    let options = {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-    };
-
-    // Format date. Ex: Monday, July 29
-    let day = today.toLocaleDateString("en-US", options);
+    let day = date.getDate();
 
     // Use res.render to load up an ejs view file
-    res.render('list', { kindOfDay: day, newListItem: items, listLength: items.length});
+    res.render('list', { listTitle: day, newListItem: items, listLength: items.length});
+});
+
+// Get request for /work
+app.get("/work", (req, res) => {
+    res.render("list", {listTitle: "Work List", newListItem: workList, listLength: workList.length});
 });
 
 // Post form 
 app.post("/", (req, res) => {
-    items.push(req.body.newItem); // Add user's input to our array
-    res.redirect('/'); // Redirect to our home page
+    var item = req.body.newItem; // Get user's input
+
+    // Check if the button clicked has a value of Work or not
+    if(req.body.button === 'Work') {
+        workList.push(item);    
+        res.redirect('/work'); // Redirect to /work
+    } else {
+        items.push(item);
+        res.redirect('/'); // Redirect to /
+    }
 });
+
+
+app.get("/about", (req, res) => {
+    res.render("about.ejs");
+});
+
 
 // Listen on port 3000
 app.listen(3000, () => {
